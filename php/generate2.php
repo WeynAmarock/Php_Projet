@@ -17,6 +17,8 @@ spl_autoload_register(function($class){
 $modele = new Modele();
 $modele->createModele($_POST["nameFile"],$_POST["select"]);
 
+$_SESSION['modele']=$modele;
+
 $nbLigne = intval($_POST['nbLigne']);
 $_SESSION['nbLigne'] = $nbLigne;
 
@@ -38,12 +40,13 @@ $nbTypeChamps = array(
     'datetime' => $_POST['datetime'],
     'boolean' => $_POST['boolean'],
 );
-
+$_SESSION['nbTypeChamps']= $nbTypeChamps;
 // Récupération du nombre total de champs
 $nbTotalChamps = 0;
 foreach ($nbTypeChamps as  $value){
     $nbTotalChamps = $nbTotalChamps + $value;
 }
+$_SESSION['nbTotalChamps']= $nbTotalChamps;
 
 ?>
 
@@ -110,44 +113,3 @@ foreach ($nbTypeChamps as  $value){
 </html>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<?php
-/*$sauvegarde = $_POST['radio1'];
-
-if($sauvegarde == 'oui'){
-    //ouverture de la connection
-    try{
-        $pdo = new PDO($mysqlDsn,$mysqlDbUser,$mysqlDbPwd, array(PDO::ATTR_PERSISTENT=>true));
-    }catch(PDOException $e) {
-        echo "Failed to get DB handle: " . $e->getMessage() . "\n";
-        exit;
-    }
-    
-    $insertQuery = 'INSERT INTO voyage ( label, date, montant, id_theme ) 
-        VALUES ( :label, :date, :montant, :theme )';
-        
-    $query = $pdo->prepare($insertQuery);
-}
-*/
-?>
