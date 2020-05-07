@@ -40,7 +40,7 @@ body{
     background-color:  rgb(64,64,64);
     font-size: 12px;
     text-align: center;
-    color :white;
+    color: white;
 }
 
 hr{
@@ -60,6 +60,6 @@ hr{
     float: left;
     width: 7.5%;
     margin-left: 5px;
-    margin-top: -50px;
+    margin-top: -20px;
     z-index: 4;
 }
