@@ -38,18 +38,14 @@ function generateChamps($type, $id){
     switch($type){
         case "int":
         case "double_float":
-        case "tinyint":
-            echo $textLegend.$textNom.$textSize.$textValExtreme.$textList.'</br>';
-        break;
-
-        case "datetime":
+        case "datetime-local":
         case "time":
         case "date":
+        case "tinyint":
             echo $textLegend.$textNom.$textValExtreme.$textList.'</br>';
-
+        break;
         case "char":
         case "varchar":
-
             echo $textLegend.$textNom.$textSize.$textFile.'</br>';
         break;
         
@@ -59,6 +55,8 @@ function generateChamps($type, $id){
 
     }
 }
+
+
 
 
 
