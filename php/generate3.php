@@ -1,17 +1,8 @@
-<?php
 
 include "init-mysql.php";
 include "generateChamps.php";
 
 session_start();
-
-$nbLigne = $_SESSION['nbLigne'];
-$nbTotalChamps = $_SESSION['nbTotalChamps'];
-$nbTypesChamps= $_SESSION['nbTypeChamps'];
-$nom_modele=$_SESSION['nom_Modele'];
-$type_modele=$_SESSION['type_Modele'];
-
-//ar_dump($modele);
 
 //On inclue toute les classes utilisé dans ce fichier
 spl_autoload_register(function($class){
@@ -19,44 +10,61 @@ spl_autoload_register(function($class){
     }
 );
 
-//echo $_POST['int_name1'];
+$nbLigne = $_SESSION['nbLigne'];
+$nbTotalChamps = $_SESSION['nbTotalChamps'];
+$nbTypesChamps= $_SESSION['nbTypeChamps'];
+$nom_modele=$_SESSION['nom_Modele'];
+$type_modele=$_SESSION['type_Modele'];
+
+//On compte le nombre de Libele deja exisant pour le id du libele du nouveau modéle 
+try{
+    $projet_tg_tp = new PDO($mysqlDsn, $mysqlDbUser, $mysqlDbPwd, array('PDO::ATTR_PERSITENT=>true)'));
+}catch(PDOException $e){
+    echo "Echec de la connexion : ". $e->getMessage() . "\n";
+    exit;
+}
+
+//préparation de la requête et execution :
+$query = $projet_tg_tp->prepare("SELECT COUNT(libelle) FROM modele");
+$query->execute();
+
+//récuperation des résultats
+$res = $query->fetchAll();
 
 $tabChamp = array();
 
 
-$i=1;
+$id=1;
 foreach($nbTypesChamps as $key => $value){
     if($value){
-        for($j=0;$j<$value;$j++){
-            $tabChamp[$i-1]= new Champ ($i,$_POST[$key.'_name'.$i]
+        for($j=0;$j<$value;$j++){;
+            $tabChamp[$id-1]= new Champ ($id,$_POST[$key.'_name'.$id]
                 ,$key);
             if($key == 'char' || $key=='varchar'){
-                $tabChamp[$i-1]->constructChar($_POST[$key.'_size'.$id]
-                    ,$_POST[$key.'_file'.$id]
-                    ,$_POST[$key.'_list'.$id]);
-            }else if($key == 'boolean'){
-
-            }else{
-                $tabChamp[$i-1]->constructNb($_POST[$key.'_size'.$id]
-                ,$_POST[$key.'_min'.$id]
-                ,$_POST[$key.'_max'.$id]
-                ,$_POST[$key.'_list'.$id]);
+                $tabChamp[$id-1]->constructChar($_POST[$key.'_size'.$id]
+            );//,$_POST[$key.'_file'.$id]);
             }
-            $i++;
+            if($key =='int' || $key=='double_float' || $key=='tinyint'){
+                $tabChamp[$id-1]->constructNb($_POST[$key.'_min'.$id]
+                    ,$_POST[$key.'_max'.$id]);
+                    echo 'test1 </br>';
+                    //Faire avec le file aussi
+            }
+            if($key == 'date'|| $key=='datetime-local'||$key=='time'){
+                $tabChamp[$id-1]->constructTime($_POST[$key.'_min'.$id]
+                ,$_POST[$key.'_max'.$id]);
+                //Faire avec le file aussi
+            }
+            $id++;
         }        
     }
     
 }
 
+//var_dump($tabChamp[0]);
 
 /*
 Ce que 'on veut :
-
-CREATE TABLE 'modele->getNom()' (
-    // Le nombre de fois que l on a de champs
-    'champ[i]->getNom()' champ->getType() (champ->getLongeur),
-    [...]
-)ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 INSERT INTO `theme` (`champ[i]`, `champ[i+1]`) VALUES
     (champ[i]->value(), champ[i+1]->value()),
@@ -64,19 +72,60 @@ INSERT INTO `theme` (`champ[i]`, `champ[i+1]`) VALUES
 );
 */
 
-$file= fopen($nom_modele.$type_modele,'w');
+$file= fopen('sql/'.$nom_modele.$type_modele,'w');
 
 //Creation du fichier sql
 if($type_modele=='.sql'){
-    fputs($file,'CREATE  TABLE \''.$nom_modele.'\' ('."\n");
+    fputs($file,'INSERT INTO \''.$nom_modele.'\'(');
     for($i=0;$i<$nbTotalChamps;$i++){
-        fputs($file,"\t".'\''.$tabChamp[$i]->getNom().'\' '.$tabChamp[$i]->getType());
-        if($tabChamp[$i]->getLongeur()){
-            fputs($file,'('.$tabChamp[$i]->getLongeur().')');
+        fputs($file,'\''.$tabChamp[$i]->getNom().'\'');
+        if($i<$nbTotalChamps-1){
+            fputs($file,' ,');
+        }else{
+            fputs($file,') VALUES'."\n");
         }
-        fputs($file,' NOT NULL ,'."\n");
     }
-    fputs($file,') ENGINE=InnoDB DEFAULT CHARSET=utf8;');
+
+    for($j=0;$j<$nbLigne;$j++){
+        fputs($file,'( ');
+        for($i=0;$i<$nbTotalChamps;$i++){
+            //echo("      test2 </br>"); 
+            switch($tabChamp[$i]->getType()){
+                case 'int' :
+                case 'tinyint':
+                    $var = $tabChamp[$i]->getValueNb();
+                break;
+                case 'double_float' :
+                    $var = $tabChamp[$i]->getValueFloat();
+                break;
+                case 'boolean' :
+                    $var=$tabChamp[$i]->getValueBoolean();
+                break;
+                case 'time' :
+                    $var=$tabChamp[$i]->getValueTime($tabChamp[$i]->getValMinDate(),$tabChamp[$i]->getValMaxDate());
+                break;
+                case 'date':
+                    $var=$tabChamp[$i]->getValueDate($tabChamp[$i]->getValMinDate(),$tabChamp[$i]->getValMaxDate());
+                break;
+                case 'datetime-local':
+                    $var=$tabChamp[$i]->getValueDateTime($tabChamp[$i]->getValMinDate(),$tabChamp[$i]->getValMaxDate());
+                break;
+            }
+            fputs($file,'"'.$var.'" ');
+            if($i<$nbTotalChamps-1){
+                fputs($file,', ');
+                
+            }  
+                 
+        }
+        fputs($file,')');
+        if($j<$nbLigne-1){
+            fputs($file,','."\n");
+        }
+    }
+    fputs($file,';');
+        
+        
 }
 
 
@@ -101,6 +150,6 @@ fclose($file);
         </style>
     </head>
     <body>
-        <img src="/tpphp/Projet_ThomasGouyet/image/header.png" id="test_header">
+       <!--- <img src="/tpphp/Projet_ThomasGouyet/image/header.png" id="test_header">--->
     </body>
 </html>
