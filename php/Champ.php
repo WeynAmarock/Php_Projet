@@ -4,21 +4,25 @@ class Champ{
     private  $id ;
     private $nomChamp;
     private $longueurMax;
-    private $ValMin; // Val Min peut autant être une date que un chiffre ou un nombre
-    private $ValMax; // Même chose que Val Min
-    private $file; //Le file contient un nombre de valeur afin de remplir le champs
+    private $val_min_nb; 
+    private $val_max_nb; 
+    private $val_min_date; 
+    private $val_max_date; 
+    private $liste_txt; //Le file contient un nombre de valeur afin de remplir le champs
     private $type;
-    private $liste;// Le user remplit une liste de valeur possible pour les champs
+    private $etat; //Optionel
+    private $libele;
 
-    public function __construct($id=NULL,$nom=NULL,$type=NULL){
+    public function __construct($id,$nom,$type,$lib=NULL){
         $this->id = $id;
         $this->nomChamp=$nom;
         $this->type=$type;
         $this->longueurMax = NULL;
-        $this->ValMin = NULL;
-        $this->ValMax = NULL;
-        $this->file=NULL;
-        $this->liste=NULL;
+        $this->val_min_nb = NULL;
+        $this->val_max_nb = NULL;
+        $this->val_min_date = NULL;
+        $this->val_max_date = NULL;
+        $this->liste_txt=NULL;
     }
 
     public function getID(){
@@ -30,11 +34,17 @@ class Champ{
     public function getLongeur(){
         return $this->longueurMax;
     }
-    public function getValMin(){
-        return $this->ValMin;
+    public function getValMinNb(){
+        return $this->val_min_nb;
     }
-    public function getValMax(){
-        return $this->ValMax;
+    public function getValMinDate(){
+        return $this->val_min_date;
+    }
+    public function getValMaxNb(){
+        return $this->val_max_nb;
+    }
+    public function getValMaxDate(){
+        return $this->val_max_date;
     }
     public function getfile(){
         return $this->longueurMax;
@@ -42,7 +52,14 @@ class Champ{
     public function getType(){
         return $this->type;
     }
+    public function getLibele(){
+        return $this->libele;
+    }
 
+
+    public function setlibele($lib){
+        $this->libele=$lib;
+    }
     public function setID($id){
         $this->id = $id;
     }
@@ -52,56 +69,59 @@ class Champ{
     public function setLongueur($longueur){
         $this->longueurMax = $longueur;
     }
-    public function setValMin($valMin){
-        $this->ValMin= $valMin;
+    public function setValMinNb($valMin){
+        $this->val_min_nb= $valMin;
     }
-    public function setValMax($valMax){
-        $this->ValMax= $valMax;
+    public function setValMinDate($valMin){
+        $this->val_min_date= $valMin;
+    }
+    public function setValMaxNb($valMax){
+        $this->val_max_nb= $valMax;
+    }
+    public function setValMaxDate($valMax){
+        $this->val_max_date= $valMax;
     }
     public function setFile($file){
         $this->file = $file;
     }
 
 
-    public function constructChar($longueur=NULL,$file=NULL,$liste=NULL){
+    public function constructChar($longueur=NULL,$liste=NULL){
         $this->longueurMax = $longueur;
-        $this->file = $file;
-        //$this->liste=$liste;
+       // $this->liste_txt = $file;
     }
 
-    public function constructNb($longueur=NULL,$valMin=NULL,$valMax=NULL,$liste=NULL){
-        $this->longueurMax = $longueur;
-        $this->ValMin= $valMin;
-        $this->ValMax=$valMax;
+    public function constructNb($valMin=NULL,$valMax=NULL,$liste=NULL){
+        $this->val_min_nb= $valMin;
+        $this->val_max_nb=$valMax;
         //Faire le système de la liste.
     }
-
-    public function constructTimeTinyint($valMin=NULL,$valMax=NULL,$liste=NULL){
-        $this->ValMin= $valMin;
-        $this->ValMax=$valMax;
+    public function constructTime($valMin=NULL,$valMax=NULL,$liste=NULL){
+        $this->val_min_date= $valMin;
+        $this->val_max_date=$valMax;
         //Faire le système de la liste.
     }
 
     //Int et TinyInt
-    public function getValueInt(){ //Donne une valeurs au hasard entre les 2 extremes donné par le user
-        return rand($this->ValMin,$this->ValMax);
+    public function getValueNb(){ //Donne une valeurs au hasard entre les 2 extremes donné par le user
+        return rand($this->val_min_nb,$this->val_max_nb);
     }
     //Double Float
     public function getValuefloat(){
-        return number_format($this->ValMin + lcg_value() 
-            * abs($this->ValMax - $this->ValMin),3);
+        return number_format($this->val_min_nb + lcg_value() 
+            * abs($this->val_max_nb - $this->val_min_nb),3);
     }
     //Boolean
     public function getValueBoolean(){ 
         return rand(0,1);
     }
     //Time
-    public function getValueTime(){
+    public function getValueTime($valMin,$valMax){
 
-        $heure1=substr($valMax,0,strpos($time1,':'));
-        $minute1=substr($valMax,strpos($time1,':')+1,strlen($time1));
-        $heure2=substr($valMin,0,strpos($time2,':'));
-        $minute2=substr($valMin,strpos($time2,':')+1,strlen($time2));
+        $heure1=substr($valMax,0,strpos($valMax,':'));
+        $minute1=substr($valMax,strpos($valMax,':')+1,strlen($valMax));
+        $heure2=substr($valMin,0,strpos($valMin,':'));
+        $minute2=substr($valMin,strpos($valMin,':')+1,strlen($valMin));
 
         if($heure1 == $heure2 && $minute1 == $minute2){
             return $heure1.':'.$minute1;
@@ -138,7 +158,7 @@ class Champ{
         return $varH.':'.$varM;
     }
     
-    public function getValueDate(){
+    public function getValueDate($valMin,$valMax){
 
         $annee1=substr($valMax,0,4);
         $mois1=substr($valMax,5,2);
@@ -169,7 +189,15 @@ class Champ{
     return $varA.'-'.$varM.'-'.$varJ;
     }
 
-}    
+    public function getValueDateTime($valMin,$valMax){
+        $date1=substr($valMax,0,9);
+        $heure1=substr($valMax,11,5);
+        $date2=substr($valMin,0,9);
+        $heure2=substr($valMin,11,5);
+        return $this->getValueDate($date2,$date1).'T'.$this->getValueTime($heure2,$heure1);
+    }
+}
 
 
-    
+
+
