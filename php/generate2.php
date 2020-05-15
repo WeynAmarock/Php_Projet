@@ -7,6 +7,7 @@ session_start();
 
 
 
+
 //On inclue toute les classes utilisé dans ce fichier
 spl_autoload_register(function($class){
     include($class.'.php');
@@ -17,7 +18,10 @@ spl_autoload_register(function($class){
 $modele = new Modele();
 $modele->createModele($_POST["nameFile"],$_POST["select"]);
 
-$_SESSION['modele']=$modele;
+//echo $modele->getNom();
+
+$_SESSION['nom_Modele']=$modele->getNom();
+$_SESSION['type_Modele']=$modele->getType();
 
 $nbLigne = intval($_POST['nbLigne']);
 $_SESSION['nbLigne'] = $nbLigne;
@@ -37,7 +41,7 @@ $nbTypeChamps = array(
     'tinyint' => $_POST['tinyint'],
     'date' => $_POST['date'],
     'time' => $_POST['time'],
-    'datetime' => $_POST['datetime'],
+    'datetime-local' => $_POST['DateTime'],
     'boolean' => $_POST['boolean'],
 );
 $_SESSION['nbTypeChamps']= $nbTypeChamps;
@@ -86,18 +90,18 @@ $_SESSION['nbTotalChamps']= $nbTotalChamps;
         <form action="generate3.php" method="post">
 
         <?php
-        $nbC=0;
+        $nbC=1;
         foreach( $nbTypeChamps as $key => $value){
             if($value){
                 for($i=0;$i<$value;$i++){
-                $nbC++;
                 generateChamps($key,$nbC);
+                $nbC++;
                 }    
             }
         }    
         ?>
 
-        <input type="submit" value="Valider" >
+        <input type="submit" id="content" value="Valider" >
         </form>
         </div>
 
@@ -112,4 +116,46 @@ $_SESSION['nbTotalChamps']= $nbTotalChamps;
     </body>
 </html>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<?php
+/*$sauvegarde = $_POST['radio1'];
+
+if($sauvegarde == 'oui'){
+    //ouverture de la connection
+    try{
+        $pdo = new PDO($mysqlDsn,$mysqlDbUser,$mysqlDbPwd, array(PDO::ATTR_PERSISTENT=>true));
+    }catch(PDOException $e) {
+        echo "Failed to get DB handle: " . $e->getMessage() . "\n";
+        exit;
+    }
+    
+    $insertQuery = 'INSERT INTO voyage ( label, date, montant, id_theme ) 
+        VALUES ( :label, :date, :montant, :theme )';
+        
+    $query = $pdo->prepare($insertQuery);
+}
+*/
+?>
 
