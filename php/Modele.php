@@ -2,6 +2,7 @@
 
 class Modele {
     private $nom_Modele;
+    private $libele;
     private $dateCreation;
     private $typeFile;
 
@@ -14,7 +15,12 @@ class Modele {
 
     }*/
 
-    public function getNom_M(){
+    public function __construct(){
+        
+    }
+    
+
+    public function getNom(){
         return $this->nom_Modele;
     }
     public function getType(){
@@ -23,8 +29,11 @@ class Modele {
     public function getCdate(){
         return $this->dateCreation;
     }
+    public function getLibele(){
+        return $this->libele;
+    }
 
-    public function setNom_M($nom){
+    public function setNom($nom){
         $this->nom_Modele = $nom;
     }
     public function setType($type){
@@ -34,7 +43,9 @@ class Modele {
     public function setDate($date){
         $this->dateCreation = $date;
     }
-
+    public function setlibele($lib){
+        $this->libele=$lib;
+    }
 
     public function CreateModele($nom,$type){
         $this->nom_Modele = $nom;
