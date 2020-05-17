@@ -1,9 +1,35 @@
 <?php
 session_start();
+include "init-mysql.php";
+
+
+//On prend toute les valeurs de la table type_champ
+//Connexion à la base de donnée
+try{
+       $projet_tg_tp = new PDO($mysqlDsn, $mysqlDbUser, $mysqlDbPwd, array('PDO::ATTR_PERSITENT=>true)'));
+}   catch(PDOException $e){
+    echo "Echec de la connexion : ". $e->getMessage() . "\n";
+    exit;
+}
+//préparation de la requête et execution :
+$query = $projet_tg_tp->prepare("SELECT * FROM type_champ");
+$query->execute();
+//récuperation des résultats
+$repType = $query->fetchAll();
+
+//On vérifie que la page n'est pas le retour de generate2.php
+if(count($_POST)>0){
+    if($_POST['suivant']=='Retour'){
+        $retour=1; //Cette variable sert àvérifier si on viens de genrerate2.php
+        $nomModele=trim($_SESSION['nom_Modele']);
+        $typeModele=trim($_SESSION['type_Modele']);
+        $nbLigne=$_SESSION['nbLigne'];
+        $nbTypeChamps=$_SESSION['nbTypeChamps'];
+    }
+}else{
+    $retour=0;
+}
 ?>
-
-
-
 
 <!DOCTYPE html>
 <html>
@@ -16,88 +42,64 @@ session_start();
     </head>
 
     <body>
-        
-        <div id="header">
-            <nav>
-                <ul>
-                    <li class="deroulant"><a href="/main.php"><img id="img-bar" src="/tpphp/Projet_ThomasGouyet/image/bar-menu2.png"></a>
-                        <ul class="sous">
-                            <li><a href="replay.php">Rejouer un modèle</a></li>
-                            <li><a href="back.php">Back</a></li>
-                        </ul>
-                    </li>
-                        
-                </ul>
-            </nav>
-            <div id="titre">
-                <h2>Générer des données</h2>
-            </div>
-            <hr id="h_head">
-            <img id="img" src="/tpphp/Projet_ThomasGouyet/image/elePHPant.png">
-            
-        </div>
+   
+        <?php include "header.php"; ?>
         
         <div id="content">
+
+        <!-- Les if($retour) servent à retourner les valeurs de generate2.php quand le user clique sur retour--->
+
         <form action="generate2.php" method="post">
                 <div>
                      <label for="name">Nom du fichier :</label>
-                     <input type="text" id="name" name="nameFile">
-                     <select name="select">
-                        <option>.csv</option>
-                        <option>.sql</option>
+                     <input required type="text" id="name" name="nameFile" 
+                      <?php if($retour){echo 'value="'.$nomModele.'"';}?>
+                      >
+                     <select name="select" >
+                        <option <?php if($retour){
+                                if($typeModele=='.sql'){echo 'selected';}
+                                }?>
+                        >.sql</option>
+                        <option <?php if($retour){
+                                if($typeModele=='.csv'){echo 'selected';}
+                                }?>>.csv</option>
                     </select>
                 </div>
                 </br>
                 <label for="nbLigne">Nombre de ligne :</label>
-                <input type="text" id="nbLigne" name="nbLigne">
+                <input required type="int" id="nbLigne" name="nbLigne" 
+                <?php if($retour){echo 'value="'.$nbLigne.'"';}?>>
                 <br></br>
                 <div id=donnees>
                     <label for="elements">Nombre de champs en fonction du type :</label>
-                    <div>
-                        <label for="int">Int :</label>
-                        <input type="text" id="int" name="int" value='0'>
-                    </div>
-                    <div>
-                        <label for="double float">Double float :</label>
-                        <input type="text" id="double_float" name="double_float" value='0'>
-                    </div>
-                    <div>
-                        <label for="char">Char :</label>
-                        <input type="text" id="char" name="char" value='0'>
-                    </div>
-                    <div>
-                        <label for="varchar">Varchar :</label>
-                        <input type="text" id="varchar" name="varchar" value='0'>
-                    </div>
-                    <div>
-                        <label for="tinyint">TinyInt :</label>
-                        <input type="text" id="tinyint" name="tinyint" value='0'> 
-                    </div>
-                    <div>
-                        <label for="date">Date :</label>
-                        <input type="text" id="date" name="date" value='0'>
-                    </div>
-                    <div>
-                        <label for="time">Time :</label>
-                        <input type="text" id="time" name="time" value='0'>
-                    </div>
-                    <div>
-                        <label for="datetime">Datetime :</label>
-                        <input type="text" id="datetime" name="datetime" value='0'>
-                    </div>
-                    <div>
-                        <label for="boolean">Boolean :</label>
-                        <input type="text" id="boolean" name='boolean' value='0'>
-                    </div>
+                    
+                       <?php
+                            foreach($repType as $tabType){
+                                if($tabType['actif']){
+                                    echo '<div>
+                                            <label for="'.$tabType['type_champ'].'">'.$tabType['type_champ'].' :</label> 
+                                            <input required type="text" id="'.$tabType['type_champ'].'" name="'.$tabType['type_champ'].'" ';
+                                            if($retour){ 
+                                                if($tabType['type_champ']!='DateTimes'){
+                                                    echo 'value = "'.$nbTypeChamps[$tabType['type_champ']].'"';
+                                                }else{
+                                                    echo 'value = "'.$nbTypeChamps['datetime-local'].'"';
+                                                }
+                                            }else{echo 'value="0">';}
+                                        echo '</div>';
+                                }
+                            }
+                       ?>
                 </div>
                 <div id="model">
                     <label for="question">Souhaitez vous garder votre modèle ?</label>
                     <label for="oui">Oui</label>
-                    <input type="radio" name="radio1" value="oui">
+                    <input type="radio" name="radio1" value="oui" required>
                     <label for="non">Non</label>
                     <input type="radio" name="radio1" value="non">
                 </div>
-                <input type="submit" value="Valider" >
+
+                <input type="submit" value="Valider" name="suivant" >
             </form>
         </div>
 
