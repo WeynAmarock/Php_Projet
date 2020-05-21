@@ -1,9 +1,12 @@
 <?php
+
+include "fonctions.php";
 session_start();
-include "init-mysql.php";
 
+$_SESSION['erreurType']=NULL; //On initialise erreur dans la session qui est une variable qui sert à retourner les erreurs dans le form de generate2
+$_SESSION['erreurId']=NULL; //Cette variable sert à connaitre dans quel champ est l erreur dans generate2.php
 
-//On prend toute les valeurs de la table type_champ
+//On prend toute les valeurs de la table type_champ pour vérifier quelle sont les types à afficher
 //Connexion à la base de donnée
 try{
        $projet_tg_tp = new PDO($mysqlDsn, $mysqlDbUser, $mysqlDbPwd, array('PDO::ATTR_PERSITENT=>true)'));
@@ -17,18 +20,20 @@ $query->execute();
 //récuperation des résultats
 $repType = $query->fetchAll();
 
+
 //On vérifie que la page n'est pas le retour de generate2.php
 if(count($_POST)>0){
     if($_POST['suivant']=='Retour'){
         $retour=1; //Cette variable sert àvérifier si on viens de genrerate2.php
-        $nomModele=trim($_SESSION['nom_Modele']);
-        $typeModele=trim($_SESSION['type_Modele']);
+        $modele=$_SESSION['modele'];
         $nbLigne=$_SESSION['nbLigne'];
         $nbTypeChamps=$_SESSION['nbTypeChamps'];
     }
 }else{
     $retour=0;
 }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -53,15 +58,15 @@ if(count($_POST)>0){
                 <div>
                      <label for="name">Nom du fichier :</label>
                      <input required type="text" id="name" name="nameFile" 
-                      <?php if($retour){echo 'value="'.$nomModele.'"';}?>
+                      <?php if($retour){echo 'value="'.$modele->getNom().'"';}?>
                       >
                      <select name="select" >
                         <option <?php if($retour){
-                                if($typeModele=='.sql'){echo 'selected';}
+                                if($modele->getType()=='.sql'){echo 'selected';}
                                 }?>
                         >.sql</option>
                         <option <?php if($retour){
-                                if($typeModele=='.csv'){echo 'selected';}
+                                if($modele->getType()=='.csv'){echo 'selected';}
                                 }?>>.csv</option>
                     </select>
                 </div>
