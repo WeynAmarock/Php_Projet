@@ -1,20 +1,47 @@
 <?php
 
-include "init-mysql.php";
-include "generateChamps.php";
+include "fonctions.php";
 
 session_start();
-;
 
-//On inclue toute les classes utilisé dans ce fichier
-spl_autoload_register(function($class){
-    include($class.'.php');
+$erreurType = $_SESSION['erreurType'];  //Variable contenant le type de l'erreur retourné par generate3.php
+$erreurId=$_SESSION['erreurId'];        //Variable contenant l'id de l'erreur retourné par generate3.php
+
+
+if(count($_POST)>0 ){
+    //On vérifie si le user a cliqué sur Suivant dans generate.php
+    if($_POST['suivant']=="Valider"){
+        $suivant=1;
+    }else{
+        $suivant=0;
     }
-);
+    //On vérifie si le user a cliqué sur Retour dans generate3.php
+    if($_POST['suivant']=="Retour"){
+        $retour1=1;
+    }else{
+        $retour1=0;
+    }
+}else{
+    $suivant=0;
+    $retour1=0;
+}
+
+
+//Ou alors, on a trouver une erreur dans les valeurs fournie par le user
+if($retour1==1 || $erreurType != NULL){
+    $retour2=1; //Cette variable sert à vérifier que l on vient de generate3.php
+    $tabChamp=$_SESSION['tabChamp'];
+    $nbTypeChamps=$_SESSION['nbTypeChamps'];
+}else{
+    $retour2=0;
+}
+
+
+
 
 //On vérifie si le user a cliqué sur valider dans generate.php
-if($_POST['suivant']=="Valider"){
-    //On compte le nombre de Libele deja exisant pour le id du libele du nouveau modéle 
+if($suivant){
+    //On compte le nombre de Libele deja exisant 
     try{
         $projet_tg_tp = new PDO($mysqlDsn, $mysqlDbUser, $mysqlDbPwd, array('PDO::ATTR_PERSITENT=>true)'));
     }catch(PDOException $e){
@@ -22,16 +49,15 @@ if($_POST['suivant']=="Valider"){
         exit;
     }
     //préparation de la requête et execution :
-    $query = $projet_tg_tp->prepare("SELECT COUNT(libelle) FROM modele");
-    $query->execute();
+    $queryL = $projet_tg_tp->prepare("SELECT COUNT(libelle) FROM modele");
+    $queryL->execute();
     //récuperation des résultats
-    $res = $query->fetch();
-
+    $idLibelle = $queryL->fetch();
 
     //On récupére tout les valeurs du 1er formulaire
-    $nomModele=$_POST["nameFile"];
-    $typeModele=$_POST["select"];
-    $libele=$res[0].'_'.$_POST["nameFile"];
+    $libelle=$idLibelle[0].'_'.$_POST["nameFile"];
+    $modele=new Modele();
+    $modele->constructModele($_POST["nameFile"],$_POST["select"],$libelle);
     $sauvegarde = $_POST['radio1'];
     $nbLigne = $_POST['nbLigne'];
     //On crée un tableau avec les nombres de champs en fonction du type voulu
@@ -53,20 +79,12 @@ if($_POST['suivant']=="Valider"){
     }
 
     //On envoie les données collectées à la session.
-    $_SESSION['nom_Modele']=$nomModele;
-    $_SESSION['type_Modele']=$typeModele;
-    $_SESSION['libele']=$libele;
+    $_SESSION['modele']=$modele;
+    $_SESSION['libelle']=$libelle;
     $_SESSION['nbLigne'] = $nbLigne;
     $_SESSION['nbTotalChamps']=$nbTotalChamps;
     $_SESSION['nbTypeChamps']= $nbTypeChamps;
     $_SESSION['sauvegarde']=$sauvegarde;
-
-}
-
-//On vérifie si le user a cliqué sur Retour dans generate3.php
-if($_POST['suivant']=='Retour'){
-    $tabChamp=$_SESSION['tabChamp'];
-    $nbTypeChamps=$_SESSION['nbTypeChamps'];
 
 }
 
@@ -109,15 +127,16 @@ if($_POST['suivant']=='Retour'){
         <form action="generate3.php" method="post">
 
         <?php
-        $nbC=0;
+        $nbC=0; //Cette variable est le nombre de champ deja créé. Durant la création des données, elle sera l'id du champ
         foreach( $nbTypeChamps as $key => $value){
             if($value){
                 for($i=0;$i<$value;$i++){
-                    echo 'ttrrt';
-                    if($_POST['suivant']=='Retour'){
-                        generateChamps($key,$nbC,$tabChamp[$i]);
+                    if($retour2){
+                        echo 'test1';
+                        generateChamps($key,$nbC,$erreurType,$erreurId,$tabChamp[$i]);
                     }else{
-                        generateChamps($key,$nbC,NULL);
+                        echo 'test2';
+                        generateChamps($key,$nbC,NULL,NULL,NULL);
                     }
                 $nbC++;
                 }    
@@ -144,33 +163,3 @@ if($_POST['suivant']=='Retour'){
         </div>
     </body>
 </html>
-
-
-<?php
-
-//Sauvegarde du modèle si le user a cliqué sur sauvergarder 
-if($_SESSION['sauvegarde'] == 'oui'){
-    //ouverture de la connection
-    try{
-        $pdo = new PDO($mysqlDsn,$mysqlDbUser,$mysqlDbPwd, array(PDO::ATTR_PERSISTENT=>true));
-    }catch(PDOException $e) {
-        echo "Failed to get DB handle: " . $e->getMessage() . "\n";
-        exit;
-    }
-    
-    $insertQuery = 'INSERT INTO modele ( libele,nom_fichier, nom_table, date_creation ) 
-        VALUES ( :libele, :nom_fichier, :nom_table, :date_creation)';
-        
-    $query = $pdo->prepare($insertQuery);
-    if($query->execute(array( 	':libele' 	=> $libele, 
-								':nom_fichier' 	=> $nomModele.$typeModele, 
-								':nom_table' 	=> $nomModele,
-								':date_creation' 	=> date('d-m-y h:i:s') )))
-		{
-			echo"insertion réussie";
-		}else{
-			echo"insertion échouée - erreur ".print_r($query->errorInfo());
-		}
-}
-
-?>
