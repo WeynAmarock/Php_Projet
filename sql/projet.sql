@@ -8,7 +8,7 @@
 #------------------------------------------------------------
 
 CREATE TABLE modele(
-        libele        Varchar (50) NOT NULL ,
+        libelle        Varchar (50) NOT NULL ,
         nom_fichier   Varchar (50) NOT NULL ,
         nom_table     Varchar (50) NOT NULL ,
         date_creation Date NOT NULL
@@ -34,14 +34,14 @@ CREATE TABLE type_champ(
 CREATE TABLE champ(
         id           Int  Auto_increment  NOT NULL ,
         nom_champ    Varchar (50) NOT NULL ,
-        longeur      Double NOT NULL ,
-        val_min_nb   Double NOT NULL ,
-        val_max_nb   Double NOT NULL ,
-        val_max_date Date NOT NULL ,
-        liste_txt    Varchar (1024) NOT NULL ,
-        fichier      Varchar (1024) NOT NULL ,
-        libele       Varchar (50) NOT NULL ,
-        type_champ   Varchar (1024) NOT NULL
+        longueur      Double NULL ,
+        val_min_nb   Double NULL ,
+        val_max_nb   Double NULL ,
+        val_min_date DATE NULL,
+        val_max_date Date NULL ,
+        liste_txt    Varchar (1024) NULL ,
+        libelle       Varchar (50)  NULL ,
+        type_champ   Varchar (1024)  NULL
 	,CONSTRAINT champ_PK PRIMARY KEY (id)
 
 	,CONSTRAINT champ_modele_FK FOREIGN KEY (libele) REFERENCES modele(libele)
