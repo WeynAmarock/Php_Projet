@@ -79,8 +79,11 @@ if(count($_POST)>0){
                     <label for="elements">Nombre de champs en fonction du type :</label>
                     
                        <?php
+                    $id=0; //Cette variable est l'identifiant des noms des types de champ afin de les récupérer plus tard 
+                    $tabType=array();
                             foreach($repType as $tabType){
                                 if($tabType['actif']){
+                                    $tabType[$id]=$tab['type_champ'];
                                     echo '<div>
                                             <label for="'.$tabType['type_champ'].'">'.$tabType['type_champ'].' :</label> 
                                             <input required type="text" id="'.$tabType['type_champ'].'" name="'.$tabType['type_champ'].'" ';
@@ -92,6 +95,7 @@ if(count($_POST)>0){
                                                 }
                                             }else{echo 'value="0">';}
                                         echo '</div>';
+                                        $id++
                                 }
                             }
                        ?>
