@@ -1,0 +1,80 @@
+body{
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.elem_form{
+    padding: 5px;
+    /* text-align: left; */
+}
+
+
+#content{
+    width: 100%;
+    text-align: center;
+    margin-top: 60px;
+    margin-bottom: 60px;
+} 
+
+h1{
+    text-align : left;
+    margin-left: 20px;
+    font-size: 2vw;
+    margin-top: 20px;
+}
+
+/*Ajout d'un contour et d'une légende à ce contour pour styliser le formulaire*/
+fieldset{
+    padding: 0 20px 20px 20px;
+    margin: 20px;
+
+    border: 1px solid #575CBF;
+    font-size: 1.4vw;
+}
+
+legend{
+    text-align: center;
+    color: #575CBF;
+}
+
+
+/* Habillage des boutons du site */
+.button{
+    border: 0;
+    text-align: center;
+    padding: 10px 20px;
+    margin-top: 20px;
+    border-radius: 10px;
+    background-color: #575CBF;
+    color: white;
+    width: 10%;
+    font-size: 1.1vw;
+}
+
+.button:hover{
+    background-color: rgb(67, 72, 179);
+}
+
+.button:active{
+    background-color: rgb(39, 42, 99);
+    box-shadow: 1px 1px 1px #575CBF inset;
+}
+
+/*/////////////////////////////////////////////////////////////*/
+
+.champ{
+    width: 200px;
+}
+
+.champ_b{
+    width: 90px;
+}
+
+label{
+    font-size: 1.1vw;
+}
+
+.ok{
+    width: 200px;
+}
