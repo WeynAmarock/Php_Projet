@@ -1,4 +1,4 @@
-<?php
+?php
 
 include "fonctions.php";
 
@@ -38,7 +38,6 @@ if($_POST['suivant']=='Suivant'){
         if($value){
             for($j=0;$j<$value;$j++){
                 $tabChamp[$id]= new Champ ();
-                echo $idC;
                 $tabChamp[$id]->constructChamp($idC,$_POST[$key.'_name'.$id],$key,$libelle);
                 switch($key){
                     case 'Boolean':
@@ -88,7 +87,7 @@ if($_POST['suivant']=='Suivant'){
     $_SESSION['tabChamp']=$tabChamp;
 
     //On crée un tableau qui contient toute les valeurs demandé par le user
-    $tabValue=createTabValue($tabValue,$tabChamp,$nbLigne,$nbTotalChamps);
+    $tabValue=createTabValue($tabChamp,$nbLigne,$nbTotalChamps);
     $_SESSION['tabValue']=$tabValue;
     //echo $tabChamp[0]->getlibelle();
 }
@@ -111,7 +110,7 @@ if($_POST['suivant']=="Accepter"){
         }
 
 
-        /*$insertQueryM = 'INSERT INTO modele ( libelle,nom_fichier, nom_table, date_creation ) 
+        $insertQueryM = 'INSERT INTO modele ( libelle,nom_fichier, nom_table, date_creation ) 
             VALUES ( :libelle, :nom_fichier, :nom_table, :date_creation)';
         
         $queryM = $pdo->prepare($insertQueryM);
@@ -124,13 +123,13 @@ if($_POST['suivant']=="Accepter"){
 		}else{
             echo"insertion échouée - erreur ".print_r($queryM->errorInfo());
             
-        }*/
+        }
 
         //Sauvegarde des Champ si le user a cliqué sur sauvergarder 
         
         foreach($tabChamp as  $champ){
             var_dump($champ);
-           /* $insertQueryC = 'INSERT INTO champ (id, nom_champ, longueur, val_min_nb, val_max_nb, val_min_date, val_max_date, liste_txt, libelle, type_champ  ) 
+            $insertQueryC = 'INSERT INTO champ (id, nom_champ, longueur, val_min_nb, val_max_nb, val_min_date, val_max_date, liste_txt, libelle, type_champ  ) 
             VALUES ( :id, :nom_champ, :longueur, :val_min_nb, :val_max_nb, :val_min_date, :val_max_date, :liste_txt, :libelle, :type_champ)';
         
             $queryC = $pdo->prepare($insertQueryC);
@@ -149,7 +148,7 @@ if($_POST['suivant']=="Accepter"){
 		    }else{
                 echo"insertion échouée - erreur ".print_r($queryC->errorInfo());
             
-            } */
+            } 
                
         }   
     }
