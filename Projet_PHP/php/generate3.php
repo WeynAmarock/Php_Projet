@@ -6,6 +6,14 @@ include "fonctions.php";
 
 session_start();
 
+//ouverture de la connection
+try{
+    $db= new PDO($mysqlDsn, $mysqlDbUser, $mysqlDbPwd, array('PDO::ATTR_PERSITENT=>true)'));
+}catch(PDOException $e){
+    echo "Echec de la connexion : ". $e->getMessage() . "\n";
+    exit;
+}
+
 //On récupére les données de generate2.php
 $nbLigne = $_SESSION['nbLigne'];
 $nbTotalChamps = $_SESSION['nbTotalChamps'];
@@ -18,14 +26,9 @@ $libelle=$_SESSION['libelle'];
 if($_POST['suivant']=='Suivant'){
 
     //On compte le nombre de id deja exisant 
-    try{
-        $projet_tg_tp = new PDO($mysqlDsn, $mysqlDbUser, $mysqlDbPwd, array('PDO::ATTR_PERSITENT=>true)'));
-    }catch(PDOException $e){
-        echo "Echec de la connexion : ". $e->getMessage() . "\n";
-        exit;
-    }
+    
     //préparation de la requête et execution :
-    $query = $projet_tg_tp->prepare("SELECT count(id) FROM champ");
+    $query = $db->prepare("SELECT count(id) FROM champ");
     $query->execute();
     $idChamp = $query->fetch();
 
@@ -102,42 +105,32 @@ if($_POST['suivant']=="Accepter"){
     $tabChamp=$_SESSION['tabChamp'];
 
     //Sauvegarde du modèle si le user a cliqué sur sauvergarder 
-    if($_SESSION['sauvegarde'] == 'oui'){
-        //ouverture de la connection
-        try{
-            $pdo = new PDO($mysqlDsn,$mysqlDbUser,$mysqlDbPwd, array(PDO::ATTR_PERSISTENT=>true));
-        }catch(PDOException $e) {
-            echo "Failed to get DB handle: " . $e->getMessage() . "\n";
-            exit;
-        }
-
-
-        /*$insertQueryM = 'INSERT INTO modele ( libelle,nom_fichier, nom_table, date_creation ) 
+    
+        $insertQueryM = 'INSERT INTO modele ( libelle,nom_fichier, nom_table, date_creation ) 
             VALUES ( :libelle, :nom_fichier, :nom_table, :date_creation)';
         
-        $queryM = $pdo->prepare($insertQueryM);
+        $queryM = $db->prepare($insertQueryM);
         if($queryM->execute(array( ':libelle' 	=> $libelle, 
 								':nom_fichier' 	=> $modele->getNomFile(), 
 								':nom_table' 	=> $modele->getNom(),
 								':date_creation' 	=> $modele->getDate())))
 		{
-			echo"insertion réussie";
 		}else{
             echo"insertion échouée - erreur ".print_r($queryM->errorInfo());
             
-        }*/
+        }
 
         //Sauvegarde des Champ si le user a cliqué sur sauvergarder 
         
         foreach($tabChamp as  $champ){
             var_dump($champ);
-           /* $insertQueryC = 'INSERT INTO champ (id, nom_champ, longueur, val_min_nb, val_max_nb, val_min_date, val_max_date, liste_txt, libelle, type_champ  ) 
+            $insertQueryC = 'INSERT INTO champ (id, nom_champ, longueur, val_min_nb, val_max_nb, val_min_date, val_max_date, liste_txt, libelle, type_champ  ) 
             VALUES ( :id, :nom_champ, :longueur, :val_min_nb, :val_max_nb, :val_min_date, :val_max_date, :liste_txt, :libelle, :type_champ)';
         
             $queryC = $pdo->prepare($insertQueryC);
             if($queryC->execute(array( ':id' 	=> $champ->getId(), 
-								':nom_champ' 	=> $champ->getNom(), 
-								':longueur' 	=> $champ->getLongueur(),
+				':nom_champ' 	=> $champ->getNom(), 
+				':longueur' 	=> $champ->getLongueur(),
                                 ':val_min_nb' 	=> $champ->getValMinNb(),
                                 ':val_max_nb' 	=> $champ->getValMaxNb(),
                                 ':val_min_date' 	=> $champ->getValMinDate(),
@@ -146,11 +139,10 @@ if($_POST['suivant']=="Accepter"){
                                 ':libelle'   =>      $champ->getLibelle(),
                                 ':type_champ'   =>  $champ->getType())))
             {
-                echo"insertion réussie";
 		    }else{
                 echo"insertion échouée - erreur ".print_r($queryC->errorInfo());
             
-            } */
+            } 
                
         }   
     }
