@@ -182,7 +182,7 @@ function createTable($tabValue,$tabChamp,$nbTotalChamps,$nbLigne){
         echo '</table>';
 }
 
-
+//Fonction renvoyant un tableau rempli de valeurs créées à partir des paramètres des champs
 function createTabValue($tabChamp,$nbLigne,$nbTotalChamps){
     $tabValue=array();
     for($i=0;$i<$nbLigne;$i++){
@@ -205,7 +205,7 @@ function createTabValue($tabChamp,$nbLigne,$nbTotalChamps){
                 case 'Time':
                     $tabValue[$i][$id]=$tabChamp[$id]->getValueTime ($tabChamp[$id]->getValMinDate(),$tabChamp[$id]->getValMaxDate());
                 break;
-                case 'datetime-local':
+                case 'DateTimes':
                     $tabValue[$i][$id]=$tabChamp[$id]->getValueDateTime ($tabChamp[$id]->getValMinDate(),$tabChamp[$id]->getValMaxDate());
                 break;
                 case 'Boolean':
