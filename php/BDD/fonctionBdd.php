@@ -24,6 +24,7 @@ function countOnBdd($objet,$table,$db){
     return $countObject[0];
 }
 
+//Fonction qui retourne une toute une table où le libelle est égale au libelle fournie en paramètre
 function dbRequestAllChampOnLibelle($db,$table,$classe,$libelle) {
     try {
       $request = 'SELECT *
