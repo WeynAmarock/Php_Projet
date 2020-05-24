@@ -64,6 +64,21 @@ function generateChamps($type, $id,$erreurType,$erreurId,$champ=NULL){
     }    
     $textValExtremeDate=$textValExtremeDate.' > </div>';
 
+    
+    $textValExtremeDateTime=
+    '<div id="values" class="elem_form">
+        <label>Valeurs extrêmes</label>
+        <input required type= "datetime-local" name="'.$type.'_min'.$id.'" class="champ_b"';
+        if($champ){
+            $textValExtremeDateTime= $textValExtremeDateTime.'value="'.$champ->getValMinDate().'"';
+        }    
+        $textValExtremeDateTime
+            =$textValExtremeDateTime.'> <input required type= "datetime-local" name="'.$type.'_max'.$id.'" class="champ_b"';
+    if($champ){
+        $textValExtremeDateTime= $textValExtremeDateTime.'value="'.$champ->getValMaxDate().'"';
+    }    
+    $textValExtremeDateTime=$textValExtremeDateTime.' > </div>';
+
 
     $textList=
     '<div id="liste_valeurs">
@@ -87,7 +102,9 @@ function generateChamps($type, $id,$erreurType,$erreurId,$champ=NULL){
             echo $textLegend.$textNom.$textValExtremeNb.'</br>';
             
         break;
-        case "datetime-local":
+        case "DateTimes":
+            echo $textLegend.$textNom.$textValExtremeDateTime.'</br>';
+        break;
         case "Time":
         case "Date":
             echo $textLegend.$textNom.$textValExtremeDate.'</br>';
