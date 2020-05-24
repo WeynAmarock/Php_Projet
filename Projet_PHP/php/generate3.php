@@ -1,4 +1,3 @@
-<!-- Ok pour CSS -->
 <?php
 
 include "fonctions.php";
@@ -26,7 +25,7 @@ $libelle=$_SESSION['libelle'];
 if($_POST['suivant']=='Suivant'){
 
     //On compte le nombre de id deja exisant 
-    
+
     //préparation de la requête et execution :
     $query = $db->prepare("SELECT count(id) FROM champ");
     $query->execute();
@@ -42,7 +41,6 @@ if($_POST['suivant']=='Suivant'){
         if($value){
             for($j=0;$j<$value;$j++){
                 $tabChamp[$id]= new Champ ();
-                echo $idC;
                 $tabChamp[$id]->constructChamp($idC,$_POST[$key.'_name'.$id],$key,$libelle);
                 switch($key){
                     case 'Boolean':
@@ -70,7 +68,7 @@ if($_POST['suivant']=='Suivant'){
                         }
                     break;
                     case 'Date':
-                    case 'datetime-local':
+                    case 'DateTimes':
                         $tabChamp[$id]->constructDate($_POST[$key.'_min'.$id]
                         ,$_POST[$key.'_max'.$id]);
                     break;
@@ -105,7 +103,8 @@ if($_POST['suivant']=="Accepter"){
     $tabChamp=$_SESSION['tabChamp'];
 
     //Sauvegarde du modèle si le user a cliqué sur sauvergarder 
-    
+    if($_SESSION['sauvegarde'] == 'oui'){
+
         $insertQueryM = 'INSERT INTO modele ( libelle,nom_fichier, nom_table, date_creation ) 
             VALUES ( :libelle, :nom_fichier, :nom_table, :date_creation)';
         
@@ -123,14 +122,13 @@ if($_POST['suivant']=="Accepter"){
         //Sauvegarde des Champ si le user a cliqué sur sauvergarder 
         
         foreach($tabChamp as  $champ){
-            var_dump($champ);
             $insertQueryC = 'INSERT INTO champ (id, nom_champ, longueur, val_min_nb, val_max_nb, val_min_date, val_max_date, liste_txt, libelle, type_champ  ) 
             VALUES ( :id, :nom_champ, :longueur, :val_min_nb, :val_max_nb, :val_min_date, :val_max_date, :liste_txt, :libelle, :type_champ)';
         
             $queryC = $pdo->prepare($insertQueryC);
             if($queryC->execute(array( ':id' 	=> $champ->getId(), 
-				':nom_champ' 	=> $champ->getNom(), 
-				':longueur' 	=> $champ->getLongueur(),
+								':nom_champ' 	=> $champ->getNom(), 
+								':longueur' 	=> $champ->getLongueur(),
                                 ':val_min_nb' 	=> $champ->getValMinNb(),
                                 ':val_max_nb' 	=> $champ->getValMaxNb(),
                                 ':val_min_date' 	=> $champ->getValMinDate(),
@@ -168,49 +166,30 @@ if($_POST['suivant']=="Accepter"){
         <meta charset="utf-8">
         <title>generate</title>
         <meta charset="utf-8">
-        <link type="text/css" rel="stylesheet" href="../css/main.css">
+        <link type="text/css" rel="stylesheet" href="/tpphp/Projet_ThomasGouyet/css/main.css">
         <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet"> 
-        <link type="text/css" rel="stylesheet" href="../css/test.css">
-        <link type="text/css" rel="stylesheet" href="../css/header.css">
-        <link type="text/css" rel="stylesheet" href="../css/footer.css">
+        <link type="text/css" rel="stylesheet" href="/tpphp/Projet_ThomasGouyet/css/test.css">
     </head>
     <body>
        <!--- <img src="/tpphp/Projet_ThomasGouyet/image/header.png" id="test_header">--->
-       <div id="header">
-			<div id="ph">
-				<img id="img" src="../images/fond.png" width=100%>
-			</div>
-			<div id="navbar">
-				
-				<img id="logo" src="../images/elePHPant.png">
-	
-				<ul id="menu">
-					<li><a href="../index.php">Accueil</a></li>
-					<li><a href="generate.php" class="active">Générer</a></li>
-					<li><a href="replay.php">Rejouer</a></li>
-					<li><a href="back.php">Back</a></li>
-				</ul>
-			</div>
-        </div>
-        <hr id="hr">
-    <?php
+    <?php include "header.php"; 
 
     // Si le user a cliqué sur suivant dans generate2.php
     if($_POST['suivant']=='Suivant'){
     createTable($tabValue,$tabChamp,$nbTotalChamps,$nbLigne);
     echo '<form action="generate3.php" method="post">
-            <input type="submit" name="suivant" value="Accepter" class="button">
+            <input type="submit" name="suivant" value="Accepter" >
         </form>
     <!---On crée ce formulaire pour retourner dans generate2.php dans le cas où le user clique sur retour-->
         <form action="generate2.php" method="post">
-            <input type="submit" value="Retour"  name="suivant" class="button">
+            <input type="submit" value="Retour"  name="suivant" >
         </form>';
     }
 
     //Si le user a cliqué sur accepter dans generate3.php
     if($_POST['suivant']=="Accepter"){
         echo '<form action="/tpphp/Projet_ThomasGouyet" method="post">
-                <input type="submit" value="Retour à la page d\'acceuil" class="button">
+                <input type="submit" value="Retour à la page d\'acceuil" >
             </form>
             </br>';
         echo '<a href="sql-csv/'.$modele->getNomFile().'">lien fichier '.$modele->getNomFile().'</a>';
@@ -219,20 +198,7 @@ if($_POST['suivant']=="Accepter"){
     ?>
 
     
-        <footer>
-            <hr id="grey_hr">
-            <div id="isen" class="elem_foot">
-                <img src="../images/ISEN.jpg" id="logo_isen">
-            </div>
-        
-            <div id="mentions" class="elem_foot">
-                <p>@-2020-Gouyet-Poupon<br>Projet CIR2 </p>
-            </div>
 
-            <div id="logo_php" class="elem_foot">
-                <img src="../images/elePHPant.png" width="10%">
-            </div>
-        </footer>
     </body>
 </html>
 
