@@ -89,7 +89,6 @@ if($_POST['suivant']=='Suivant'){
     //On crée un tableau qui contient toute les valeurs demandé par le user
     $tabValue=createTabValue($tabChamp,$nbLigne,$nbTotalChamps);
     $_SESSION['tabValue']=$tabValue;
-    //echo $tabChamp[0]->getlibelle();
 }
 
 
@@ -119,7 +118,6 @@ if($_POST['suivant']=="Accepter"){
 								':nom_table' 	=> $modele->getNom(),
 								':date_creation' 	=> $modele->getDate())))
 		{
-			echo"insertion réussie";
 		}else{
             echo"insertion échouée - erreur ".print_r($queryM->errorInfo());
             
@@ -143,7 +141,6 @@ if($_POST['suivant']=="Accepter"){
                                 ':libelle'   =>      $champ->getLibelle(),
                                 ':type_champ'   =>  $champ->getType())))
             {
-                echo"insertion réussie";
 		    }else{
                 echo"insertion échouée - erreur ".print_r($queryC->errorInfo());
             
