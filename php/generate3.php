@@ -128,7 +128,6 @@ if($_POST['suivant']=="Accepter"){
         //Sauvegarde des Champ si le user a cliqué sur sauvergarder 
         
         foreach($tabChamp as  $champ){
-            var_dump($champ);
             $insertQueryC = 'INSERT INTO champ (id, nom_champ, longueur, val_min_nb, val_max_nb, val_min_date, val_max_date, liste_txt, libelle, type_champ  ) 
             VALUES ( :id, :nom_champ, :longueur, :val_min_nb, :val_max_nb, :val_min_date, :val_max_date, :liste_txt, :libelle, :type_champ)';
         
