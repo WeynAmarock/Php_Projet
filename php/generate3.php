@@ -1,9 +1,17 @@
-?php
+<?php
 
 include "fonctions.php";
 
 
 session_start();
+
+//ouverture de la connection
+try{
+    $db= new PDO($mysqlDsn, $mysqlDbUser, $mysqlDbPwd, array('PDO::ATTR_PERSITENT=>true)'));
+}catch(PDOException $e){
+    echo "Echec de la connexion : ". $e->getMessage() . "\n";
+    exit;
+}
 
 //On récupére les données de generate2.php
 $nbLigne = $_SESSION['nbLigne'];
@@ -17,14 +25,9 @@ $libelle=$_SESSION['libelle'];
 if($_POST['suivant']=='Suivant'){
 
     //On compte le nombre de id deja exisant 
-    try{
-        $projet_tg_tp = new PDO($mysqlDsn, $mysqlDbUser, $mysqlDbPwd, array('PDO::ATTR_PERSITENT=>true)'));
-    }catch(PDOException $e){
-        echo "Echec de la connexion : ". $e->getMessage() . "\n";
-        exit;
-    }
+
     //préparation de la requête et execution :
-    $query = $projet_tg_tp->prepare("SELECT count(id) FROM champ");
+    $query = $db->prepare("SELECT count(id) FROM champ");
     $query->execute();
     $idChamp = $query->fetch();
 
@@ -65,7 +68,7 @@ if($_POST['suivant']=='Suivant'){
                         }
                     break;
                     case 'Date':
-                    case 'datetime-local':
+                    case 'DateTimes':
                         $tabChamp[$id]->constructDate($_POST[$key.'_min'.$id]
                         ,$_POST[$key.'_max'.$id]);
                     break;
@@ -89,6 +92,7 @@ if($_POST['suivant']=='Suivant'){
     //On crée un tableau qui contient toute les valeurs demandé par le user
     $tabValue=createTabValue($tabChamp,$nbLigne,$nbTotalChamps);
     $_SESSION['tabValue']=$tabValue;
+    //echo $tabChamp[0]->getlibelle();
 }
 
 
@@ -100,19 +104,11 @@ if($_POST['suivant']=="Accepter"){
 
     //Sauvegarde du modèle si le user a cliqué sur sauvergarder 
     if($_SESSION['sauvegarde'] == 'oui'){
-        //ouverture de la connection
-        try{
-            $pdo = new PDO($mysqlDsn,$mysqlDbUser,$mysqlDbPwd, array(PDO::ATTR_PERSISTENT=>true));
-        }catch(PDOException $e) {
-            echo "Failed to get DB handle: " . $e->getMessage() . "\n";
-            exit;
-        }
-
 
         $insertQueryM = 'INSERT INTO modele ( libelle,nom_fichier, nom_table, date_creation ) 
             VALUES ( :libelle, :nom_fichier, :nom_table, :date_creation)';
         
-        $queryM = $pdo->prepare($insertQueryM);
+        $queryM = $db->prepare($insertQueryM);
         if($queryM->execute(array( ':libelle' 	=> $libelle, 
 								':nom_fichier' 	=> $modele->getNomFile(), 
 								':nom_table' 	=> $modele->getNom(),

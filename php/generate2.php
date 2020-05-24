@@ -60,17 +60,14 @@ if($suivant){
     $modele->constructModele($_POST["nameFile"],$_POST["select"],$libelle);
     $sauvegarde = $_POST['radio1'];
     $nbLigne = $_POST['nbLigne'];
-    
+    $tabType=$_SESSION['tabType'];
+
     //On crée un tableau avec les nombres de champs en fonction du type voulu
     $nbTypeChamps = array();
     foreach($tabType as $type){
-        if($type!='DateTimes'){
-            $nbTypeChamps[$type] = $_POST[$type];
-        }else{
-            $nbTypeChamps['datetime-local']=$_POST[$type];
-        }   
+        $nbTypeChamps[$type] = $_POST[$type];
     }
-    
+
     // Récupération du nombre total de champs
     $nbTotalChamps = 0;
     foreach ($nbTypeChamps as  $value){

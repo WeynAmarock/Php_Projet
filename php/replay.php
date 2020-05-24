@@ -23,7 +23,11 @@ if(count($_POST)==0){ //1ère partie, le user rentre dans la page
     $query->execute();
     //récuperation des résultats
     $tabModele = $query->fetchAll(PDO::FETCH_CLASS, 'Modele');
-}else if($_POST['Charger']=='Charger ce modele ?') { //Le user a cliqué sur charger
+}
+
+
+
+else if($_POST['Charger']=='Charger ce modele ?') { //Le user a cliqué sur charger
 
     $afficheModele=0;
     $afficheChamps=0;
@@ -31,32 +35,30 @@ if(count($_POST)==0){ //1ère partie, le user rentre dans la page
 
     $nbLigne=$_POST['nbLigne'];
     $tabChamp=$_SESSION['tabChamp'];
-    $nbTotalChamp=$_SESSION['nbTotalChamp'];
+    $nbTotalChamps=$_SESSION['nbTotalChamps'];
     $libelle=$_SESSION['libelle'];
 
     //On récupère toute les informations du modele à partir de son libelle
     $tabModele=dbRequestAllChampOnLibelle($db,'modele','Modele',$libelle);
     $modele=$tabModele[0];
-    echo $modele->getNom();
-   
+    $tabValue = createTabValue($tabChamp,$nbLigne,$nbTotalChamps);
 
-    //$tabValue = createTabValue($tabChamp,$nbLigne,$nbTotalChamp);
-
-    /*$file= fopen('sql-csv/'.$modele->getNom().$modele->getType(),'w');
+    $file= fopen('sql-csv/'.$modele->getNom().$modele->getType(),'w');
     if($modele->getType()=='.sql'){
         createSql($file,$tabValue,$tabChamp,$modele->getNom(),$modele->getType(),$nbTotalChamps,$nbLigne);   
     }else{
         createCSV($file,$tabValue,$tabChamp,$modele->getNom(),$modele->getType(),$nbTotalChamps,$nbLigne); 
     }
-    fclose($file);*/
+    fclose($file);
 
-}else {
+}else{
     $afficheModele=0;
     $afficheChamps=1;
     $afficheFile=0;
-    $nomTable=substr($_POST['Charger'],8);
+    $libelle=substr($_POST['Charger'],8);
+    $_SESSION['libelle']=$libelle;
     //On récupère toute les informations dsur les champs à partir du libelle du modele
-    $tabChamp=dbRequestAllChampOnLibelle($db,'champ','Champ',$nomTable);
+    $tabChamp=dbRequestAllChampOnLibelle($db,'champ','Champ',$libelle);
 }
 
 ?>
@@ -122,8 +124,7 @@ if(count($_POST)==0){ //1ère partie, le user rentre dans la page
                         <td class="nomModele"><?php echo $modele->getNom();?></td>
                         <td class="nomFichierModele"><?php echo $modele->getNomFile();?></td>
                         <td class="dateModele"><?php echo $modele->getDate();?></td>
-                        <td><input type="submit" value="<?php $_SESSION['libelle']=$modele->getLibele();
-                        echo 'Charger '.$modele->getLibele();?>" name="Charger"></td>
+                        <td><input type="submit" value="<?php echo 'Charger '.$modele->getLibele();?>" name="Charger"></td>
                     </tr>
                     <?php 
                        endforeach;
@@ -135,7 +136,7 @@ if(count($_POST)==0){ //1ère partie, le user rentre dans la page
             //Si le user ne rentre pas dans le bloc if précédent cela veut dire que nous sommes dans la génération des champs du modèle choisi
             if($afficheChamps):
             ?>
-            <p> <label>Table : <?php echo $nomTable;?></label></p>
+            <p> <label>Table : <?php echo $libelle;?></label></p>
             <p>
                 <label for="nbLigne">Nombre de ligne : </label>
                 <input name="nbLigne" required/>
@@ -157,9 +158,9 @@ if(count($_POST)==0){ //1ère partie, le user rentre dans la page
                 </THEAD>
                 
                 <TBODY>
-                <?php $nbTotalChamp=0;
+                <?php $nbTotalChamps=0;
                 foreach($tabChamp as $champ):
-                    $nbTotalChamp++;
+                    $nbTotalChamps++;
                 ?>
                     <tr>
                         <td id=""><?php if($champ->getNom()){echo $champ->getNom();}else{echo'NULL';}?></td>
@@ -172,7 +173,7 @@ if(count($_POST)==0){ //1ère partie, le user rentre dans la page
                         <td id=""><?php if($champ->getLibelle()){echo $champ->getLibelle();}else{echo'NULL';}?></td>
                         <td id=""><?php if($champ->getType()){echo $champ->getType();}else{echo'NULL';}?></td>
                     </tr>
-                <?php $_SESSION['nbTotalChamp']=$nbTotalChamp;
+                <?php $_SESSION['nbTotalChamps']=$nbTotalChamps;
                 $_SESSION['tabChamp']=$tabChamp;
                 endforeach;?>
                 </TBODY>

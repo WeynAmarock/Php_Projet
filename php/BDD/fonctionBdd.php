@@ -3,18 +3,6 @@
 require_once("../php/BDD/init-mysql.php") ;
 
 
-//Cette fonction sert à se connecter à une BDD
-function dbConnect(){
-    try {
-        $projet_tg_tp = new PDO($mysqlDsn, $mysqlDbUser, $mysqlDbPwd, array('PDO::ATTR_PERSITENT=>true)'));
-        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    } catch(PDOException $exception) {
-        error_log('Connection error: '.$exception->getMessage());
-        return false;
-    }
-    return $db;
-}
-
 //Fonction servant à compter quelque chose dans une table
 function countOnBdd($objet,$table,$db){
     $request='"SELECT count('.$objet.') FROM '.$table.'"';

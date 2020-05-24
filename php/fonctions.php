@@ -64,7 +64,6 @@ function generateChamps($type, $id,$erreurType,$erreurId,$champ=NULL){
     }    
     $textValExtremeDate=$textValExtremeDate.' > </div>';
 
-    
     $textValExtremeDateTime=
     '<div id="values" class="elem_form">
         <label>Valeurs extrêmes</label>
@@ -198,6 +197,7 @@ function createTable($tabValue,$tabChamp,$nbTotalChamps,$nbLigne){
         }
         echo '</table>';
 }
+
 
 //Fonction renvoyant un tableau rempli de valeurs créées à partir des paramètres des champs
 function createTabValue($tabChamp,$nbLigne,$nbTotalChamps){

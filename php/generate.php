@@ -65,7 +65,7 @@ if(count($_POST)>0){
                                 if($modele->getType()=='.sql'){echo 'selected';}
                                 }?>
                         >.sql</option>
-                        <option <?php if($retour){
+                        <opztion <?php if($retour){
                                 if($modele->getType()=='.csv'){echo 'selected';}
                                 }?>>.csv</option>
                     </select>
@@ -79,21 +79,22 @@ if(count($_POST)>0){
                     <label for="elements">Nombre de champs en fonction du type :</label>
                     
                        <?php
-                    $id=0; //Cette variable est l'identifiant des noms des types de champ afin de les récupérer plus tard 
-                    $tabType=array();
-                            foreach($repType as $tabType){
-                                if($tabType['actif']){
+                       $id=0; //Cette variable est l'identifiant des noms des types de champ afin de les récupérer plus tard 
+                       $tabType=array();
+                            foreach($repType as $tab){
+                                if($tab['actif']){
                                     $tabType[$id]=$tab['type_champ'];
                                     echo '<div>
-                                            <label for="'.$tabType['type_champ'].'">'.$tabType['type_champ'].' :</label> 
-                                            <input required type="text" id="'.$tabType['type_champ'].'" name="'.$tabType['type_champ'].'" ';
+                                            <label for="'.$tab['type_champ'].'">'.$tab['type_champ'].' :</label> 
+                                            <input required type="text" id="'.$tab['type_champ'].'" name="'.$tab['type_champ'].'" ';
                                             if($retour){ 
-                                                    echo 'value = "'.$nbTypeChamps[$tabType['type_champ']].'"';
+                                                echo 'value = "'.$nbTypeChamps[$tab['type_champ']].'"';
                                             }else{echo 'value="0">';}
                                         echo '</div>';
-                                        $id++
+                                        $id++;
                                 }
                             }
+                            $_SESSION['tabType']=$tabType;
                        ?>
                 </div>
                 <div id="model">

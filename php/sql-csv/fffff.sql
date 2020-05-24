@@ -1,6 +1,6 @@
-INSERT INTO 'fffff'('testInt' ,'testB') VALUES
-( "92" , "1" ),
-( "35" , "1" ),
-( "58" , "1" ),
-( "61" , "1" ),
-( "90" , "0" );
+INSERT INTO fffff (eeeee) VALUES
+( "1" ),
+( "1" ),
+( "1" ),
+( "0" ),
+( "1" );
