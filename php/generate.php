@@ -88,11 +88,7 @@ if(count($_POST)>0){
                                             <label for="'.$tabType['type_champ'].'">'.$tabType['type_champ'].' :</label> 
                                             <input required type="text" id="'.$tabType['type_champ'].'" name="'.$tabType['type_champ'].'" ';
                                             if($retour){ 
-                                                if($tabType['type_champ']!='DateTimes'){
                                                     echo 'value = "'.$nbTypeChamps[$tabType['type_champ']].'"';
-                                                }else{
-                                                    echo 'value = "'.$nbTypeChamps['datetime-local'].'"';
-                                                }
                                             }else{echo 'value="0">';}
                                         echo '</div>';
                                         $id++
